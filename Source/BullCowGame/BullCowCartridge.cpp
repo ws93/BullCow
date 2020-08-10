@@ -5,12 +5,12 @@ void UBullCowCartridge::BeginPlay() // When the game starts
 {
     Super::BeginPlay();
 
+    SetupGame(); // Setting up game
+
+    // PrintLine(FString::Printf(TEXT("The HiddenWord is: %s. It's %i char long."), *HiddenWord, WordLength)); //Debug Line
     // Welcome the player
     PrintLine(TEXT("Hi There! Welcome to Bull & Cows Game!"));
-    PrintLine(TEXT("Please enter a four letter word:"));
-
-    InitGame(); // Setting up game
-
+    PrintLine(TEXT("Please enter a %i letter word:"), WordLength);
 
     // Prompt player for guess
 }
@@ -23,6 +23,12 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
     if (HiddenWord == Input) {
         PrintLine(TEXT("Your guess is correct! Congratulation"));
     } else {
+        // Check the length of player's guess
+        if (WordLength != Input.Len()) {
+            // PrintLine(TEXT("The HiddenWord is 4 char long, try again!"));
+            PrintLine(TEXT("The length of your word is not %i"), WordLength);
+        };
+
         PrintLine(TEXT("Sorry that was wrong :( Please try again"));
     }
 
@@ -37,7 +43,8 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
     // Play Again or Quit
 }
 
-void UBullCowCartridge::InitGame() {
-    HiddenWord = TEXT("apex");
+void UBullCowCartridge::SetupGame() {
+    HiddenWord = TEXT("apexabc");
+    WordLength = HiddenWord.Len();
     RemainLives = 5;
 }
