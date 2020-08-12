@@ -17,19 +17,23 @@ void UBullCowCartridge::BeginPlay() // When the game starts
 
 void UBullCowCartridge::OnInput(const FString& Input) // When the player hits enter
 {
-    ClearScreen();
+    // If game is over then clear screen and SetupGame() 
+    // else Check PlayerGuess
 
-    // Check PlayerGuess
-    if (HiddenWord == Input) {
-        PrintLine(TEXT("Your guess is correct! Congratulation"));
+    if (bGameOver) {
+        ClearScreen();
+        SetupGame();
     } else {
-        // Check the length of player's guess
-        if (WordLength != Input.Len()) {
-            // PrintLine(TEXT("The HiddenWord is 4 char long, try again!"));
-            PrintLine(TEXT("The length of your word is not %i"), WordLength);
-        };
-
-        PrintLine(TEXT("Sorry that was wrong :( Please try again"));
+        if (HiddenWord == Input) {
+            PrintLine(TEXT("Your guess is correct! Congratulation"));
+            EndGame();
+        } else {
+            // Check the length of player's guess
+            if (WordLength != Input.Len()) {
+                PrintLine(TEXT("The length of your word is not %i"), WordLength);
+                EndGame();
+            };
+        }
     }
 
     // Check if Isogram
@@ -46,5 +50,11 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
 void UBullCowCartridge::SetupGame() {
     HiddenWord = TEXT("apexabc");
     WordLength = HiddenWord.Len();
+    bGameOver = false;
     RemainLives = 5;
+}
+
+void UBullCowCartridge::EndGame() {
+    bGameOver = true;
+    PrintLine(TEXT("Game is over. Press enter to continue..."));
 }
