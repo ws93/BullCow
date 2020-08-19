@@ -22,24 +22,7 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
         ClearScreen();
         SetupGame();
     } else {
-        if (HiddenWord == Input) {
-            PrintLine(TEXT("Your guess is correct! Congratulation"));
-            EndGame();
-        } else {
-            --RemainLives;
-            if (RemainLives > 0) {
-                // Check the length of player's guess
-                if (WordLength != Input.Len()) {
-                    PrintLine(TEXT("The length of your word is not %i"), WordLength);
-                    PrintLine(TEXT("You lost a live and you still have %i lives remaining."), RemainLives);
-                    // EndGame();
-                };
-            } else {
-                PrintLine(TEXT("You have no lives left!"));
-                EndGame();
-            }
-
-        }
+        ProcessGuess(Input);
     }
 
     // Check if Isogram
@@ -71,4 +54,25 @@ void UBullCowCartridge::SetupGame() {
 void UBullCowCartridge::EndGame() {
     bGameOver = true;
     PrintLine(TEXT("Game is over. Press enter to continue..."));
+}
+
+void UBullCowCartridge::ProcessGuess(const FString& Guess) {
+    if (HiddenWord == Guess) {
+        PrintLine(TEXT("Your guess is correct! Congratulation"));
+        EndGame();
+    } else {
+        --RemainLives;
+        if (RemainLives > 0) {
+            // Check the length of player's guess
+            if (WordLength != Guess.Len()) {
+                PrintLine(TEXT("The length of your word is not %i"), WordLength);
+                PrintLine(TEXT("You lost a live and you still have %i lives remaining."), RemainLives);
+                // EndGame();
+            };
+        } else {
+            PrintLine(TEXT("You have no lives left!"));
+            EndGame();
+        }
+
+    }
 }
