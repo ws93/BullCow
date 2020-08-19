@@ -8,17 +8,15 @@ void UBullCowCartridge::BeginPlay() // When the game starts
     SetupGame(); // Setting up game
 
     // PrintLine(FString::Printf(TEXT("The HiddenWord is: %s. It's %i char long."), *HiddenWord, WordLength)); //Debug Line
-    // Welcome the player
-    PrintLine(TEXT("Hi There! Welcome to Bull & Cows Game!"));
-    PrintLine(TEXT("Please enter a %i letter word:"), WordLength);
-
-    // Prompt player for guess
 }
 
 void UBullCowCartridge::OnInput(const FString& Input) // When the player hits enter
 {
     // If game is over then clear screen and SetupGame() 
     // else Check PlayerGuess
+    if (RemainLives <= 0) {
+        EndGame();
+    }
 
     if (bGameOver) {
         ClearScreen();
@@ -28,11 +26,19 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
             PrintLine(TEXT("Your guess is correct! Congratulation"));
             EndGame();
         } else {
-            // Check the length of player's guess
-            if (WordLength != Input.Len()) {
-                PrintLine(TEXT("The length of your word is not %i"), WordLength);
+            --RemainLives;
+            if (RemainLives > 0) {
+                // Check the length of player's guess
+                if (WordLength != Input.Len()) {
+                    PrintLine(TEXT("The length of your word is not %i"), WordLength);
+                    PrintLine(TEXT("You lost a live and you still have %i lives remaining."), RemainLives);
+                    // EndGame();
+                };
+            } else {
+                PrintLine(TEXT("You have no lives left!"));
                 EndGame();
-            };
+            }
+
         }
     }
 
@@ -48,10 +54,18 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
 }
 
 void UBullCowCartridge::SetupGame() {
-    HiddenWord = TEXT("apexabc");
+    HiddenWord = TEXT("apex");
     WordLength = HiddenWord.Len();
+    RemainLives = HiddenWord.Len();
     bGameOver = false;
-    RemainLives = 5;
+
+    // Welcome the player
+    PrintLine(TEXT("Hi There! Welcome to Bull & Cows Game!"));
+    PrintLine(TEXT("You have %i lives remaining."), RemainLives);
+
+    // Prompt player for guess
+    PrintLine(TEXT("Please enter a %i letter word:"), WordLength);
+
 }
 
 void UBullCowCartridge::EndGame() {
