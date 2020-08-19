@@ -24,16 +24,6 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
     } else {
         ProcessGuess(Input);
     }
-
-    // Check if Isogram
-    // Check right number of chars
-
-    // Remove life
-    // Check if lives > 0
-    // If Yes, guess again
-    // If No, show GameOver and HiddenWord and lives left
-    // Check user input
-    // Play Again or Quit
 }
 
 void UBullCowCartridge::SetupGame() {
@@ -61,15 +51,18 @@ void UBullCowCartridge::ProcessGuess(const FString& Guess) {
         PrintLine(TEXT("Your guess is correct! Congratulation"));
         EndGame();
     } else {
+        // Remove life
         --RemainLives;
-        if (RemainLives > 0) {
+
+        // Check if lives > 0
+        if (RemainLives > 0) { // If Yes, guess again
             // Check the length of player's guess
             if (WordLength != Guess.Len()) {
                 PrintLine(TEXT("The length of your word is not %i"), WordLength);
                 PrintLine(TEXT("You lost a live and you still have %i lives remaining."), RemainLives);
                 // EndGame();
             };
-        } else {
+        } else { // If No, show GameOver and HiddenWord and lives left
             PrintLine(TEXT("You have no lives left!"));
             EndGame();
         }
