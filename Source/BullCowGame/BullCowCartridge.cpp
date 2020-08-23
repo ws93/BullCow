@@ -1,9 +1,14 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 #include "BullCowCartridge.h"
+#include "Misc/FileHelper.h"
+#include "Misc/Paths.h"
 
 void UBullCowCartridge::BeginPlay() // When the game starts
 {
     Super::BeginPlay();
+
+    const FString WordListPath = FPaths::ProjectContentDir() / TEXT("WordLists/HiddenWordList.txt");
+    FFileHelper::LoadFileToStringArray(Words, *WordListPath);
 
     SetupGame(); // Setting up game
 
@@ -27,7 +32,7 @@ void UBullCowCartridge::OnInput(const FString& Input) // When the player hits en
 }
 
 void UBullCowCartridge::SetupGame() {
-    HiddenWord = TEXT("apex");
+    HiddenWord = Words[3];
     WordLength = HiddenWord.Len();
     RemainLives = HiddenWord.Len();
     bGameOver = false;
@@ -39,10 +44,13 @@ void UBullCowCartridge::SetupGame() {
     // Prompt player for guess
     PrintLine(TEXT("Please enter a %i letter word:"), WordLength);
 
+    const TCHAR HW[] = TEXT("cake");
+    HW;
 }
 
 void UBullCowCartridge::EndGame() {
     bGameOver = true;
+
     PrintLine(TEXT("Game is over. Press enter to continue..."));
 }
 
@@ -50,22 +58,50 @@ void UBullCowCartridge::ProcessGuess(const FString& Guess) {
     if (HiddenWord == Guess) {
         PrintLine(TEXT("Your guess is correct! Congratulation"));
         EndGame();
-    } else {
-        // Remove life
-        --RemainLives;
 
-        // Check if lives > 0
-        if (RemainLives > 0) { // If Yes, guess again
-            // Check the length of player's guess
-            if (WordLength != Guess.Len()) {
-                PrintLine(TEXT("The length of your word is not %i"), WordLength);
-                PrintLine(TEXT("You lost a live and you still have %i lives remaining."), RemainLives);
-                // EndGame();
-            };
-        } else { // If No, show GameOver and HiddenWord and lives left
-            PrintLine(TEXT("You have no lives left!"));
-            EndGame();
-        }
-
+        return;
     }
+
+    // Check the length of player's guess
+    if (WordLength != Guess.Len()) {
+        PrintLine(TEXT("The length of your word is not %i"), WordLength);
+
+        return;
+    }
+
+    // Check if is Isogram
+    if (!IsIsogram(Guess)) {
+        PrintLine(TEXT("No repeating chars!\n"));
+        
+        return;
+    }
+    
+
+    // Remove life
+    PrintLine(TEXT("Lost a life!"));
+    --RemainLives;
+
+    // Check if lives > 0
+    if (RemainLives <= 0) {
+        ClearScreen();
+        PrintLine(TEXT("You have no lives left!\n"));
+        PrintLine(TEXT("The hidden word is %s\n"), *HiddenWord);
+        EndGame();
+
+        return;
+    }
+
+    PrintLine(TEXT("Guess again, you have %i lives left\n"), RemainLives);
+}
+
+bool UBullCowCartridge::IsIsogram(const FString& data) const {
+    // A navie approache to check if data is isogram
+    for (int32 i = 0; i < data.Len() - 1; ++i) {
+        for (int j = i + 1; j < data.Len(); ++j) {
+            if (data[i] == data[j]) {
+                return false;
+            }
+        }
+    }
+    return true;
 }

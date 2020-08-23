@@ -24,4 +24,6 @@ class BULLCOWGAME_API UBullCowCartridge : public UCartridge
 	int32 RemainLives;
 	int32 WordLength;
 	bool bGameOver;
+	bool IsIsogram(const FString& Guess) const;
+	TArray<FString> Words;
 };
